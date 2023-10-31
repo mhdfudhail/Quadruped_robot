@@ -37,26 +37,61 @@ void loop()
 //////myServo.setPWM(1, 0,map(0, 0, 180, 160, 600));
 //ik_y(-50,80);/
 //delay(1000);/
+///////////////----y----/////////////////////////////
+
 
 for(int i=0; i<40; i+=2){
- ik_y(i,130);
-//  ik_x(i/,80);
-  delay(10);
+ ik_y(i,107);
+//  delay(10);
 }
 for(int i=40; i>0; i-=2){
-    ik_y(i,130);
-//    ik_x(/i,80);
-  delay(10);
+    ik_y(i,107);
+//  delay(10);
 }
 for(int i=0; i>-40; i-=2){
-    ik_y(i,130);
-//    ik_x(i/,80);
-  delay(10);
+    ik_y(i,107);
+//  delay(10);
 }
 for(int i=-40; i<0; i+=2){
-    ik_y(i,130);
-//    ik_x/(i,80);
-  delay(10);
+    ik_y(i,107);
+//  delay(10);
+}
+
+///////////////----X----/////////////////////////////
+
+for(int i=0; i<40; i+=2){
+  ik_x(i,107);
+//  delay(10);
+}
+for(int i=40; i>0; i-=2){
+    ik_x(i,107);
+//  delay(10);
+}
+for(int i=0; i>-40; i-=2){
+    ik_x(i,107);
+//  delay(10);
+}
+for(int i=-40; i<0; i+=2){
+    ik_x(i,107);
+//  delay(10);
+}
+
+///////////////----X----/////////////////////////////
+for(int i=107; i<145; i+=2){
+servoPose(i);
+//  delay(10);
+}
+for(int i=145; i>107; i-=2){
+servoPose(i);
+//  delay(10);
+}
+for(int i=107; i>68; i-=2){
+servoPose(i);
+//  delay(10);
+}
+for(int i=68; i<107; i+=2){
+servoPose(i);
+//  delay(10);
 }
 
 
@@ -98,11 +133,18 @@ void servoPose(int c){
   Serial.print("Theta : ");
   Serial.println(thetaDegree);
 
-myServo.writeMicroseconds(8, map((180-bDegree),0,180,930,2400));
-myServo.writeMicroseconds(10, map((180-(cDegree-45)),0,180,1150,2750));
-//myServo.writeMicroseconds(10, map((cDegree-45),0,180,2750,1150));  
-myServo.writeMicroseconds(9, map((180-bDegree),0,180,930,2350));
-myServo.writeMicroseconds(11, map((180-(cDegree-45)),0,180,1150,2750));
+// Right Side
+    myServo.writeMicroseconds(8, map((180-bDegree),0,180,930,2400));
+    myServo.writeMicroseconds(10, map((180-(cDegree-45)),0,180,1150,2750));
+    //myServo.writeMicroseconds(10, map((cDegree-45),0,180,2750,1150));  
+    myServo.writeMicroseconds(9, map((180-bDegree),0,180,930,2350));
+    myServo.writeMicroseconds(11, map((180-(cDegree-45)),0,180,1150,2750));
+//Left Side
+    myServo.writeMicroseconds(5, map(bDegree,0,180,950,2000)); 
+    myServo.writeMicroseconds(4, map(bDegree,0,180,900,2350));
+    myServo.writeMicroseconds(6, map((cDegree-45),0,180,600,2000));
+    myServo.writeMicroseconds(7, map((cDegree-45),0,180,650,2000));
+
 
 //myServo.writeMicroseconds(8, map((180-bDegree),0,180,930,2350));
 //myServo.writeMicroseconds(10, map((180-(cDegree-45)),0,180,950,2350));  
@@ -150,6 +192,10 @@ void ik_x(float newX, float z){
   myServo.writeMicroseconds(11, map((180-(cDegree-45)),0,180,1150,2750));
   
   //Left Side 
+    myServo.writeMicroseconds(5, map((bDegree-tempDegree),0,180,950,2000)); 
+    myServo.writeMicroseconds(4, map((bDegree-tempDegree),0,180,900,2350));
+    myServo.writeMicroseconds(6, map((cDegree-45),0,180,600,2000));
+    myServo.writeMicroseconds(7, map((cDegree-45),0,180,650,2000));
 //  myServo.writeMicroseconds(5, map((bDegree-tempDegree),0,180,950,2350));
 //  myServo.writeMicroseconds(7, map((cDegree-45),0,180,650,2000));
 
