@@ -23,8 +23,9 @@ void loop() {
 //map(i, 0,180,900,2350
 //map(i, 0,180,930,2350)
 //
-myServo.writeMicroseconds(10,1150);//180: 0:2650
-//  myServo.writeMicroseconds(5,map(i,0,180,950,2320));// for 0 degree : 950, 90 degree: 1650, 180 degree : 2320
+//myServo.writeMicroseconds(10,1150);//180: 0:2650
+  myServo.writeMicroseconds(5,map(i,0,180,950,2320));// for 0 degree : 950, 90 degree: 1650, 180 degree : 2320
+  myServo.writeMicroseconds(7, map(i,0,180,650,2000));
 //  myServo.writeMicroseconds(7,1325); // 0:650, 90: 180:2000
   delay(1000);
 

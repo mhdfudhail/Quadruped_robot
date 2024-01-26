@@ -18,14 +18,14 @@ class kinematics():
         
         self.right_legs = [right_front, right_back]
         
-        self.link_1 = 0.045
-        self.link_2 = 0.1115
-        self.link_3 = 0.155
+        self.link_1 = 0.001
+        self.link_2 = 0.100
+        self.link_3 = 0.150
         self.phi = radians(90)
         
         # body dimensions
-        self.length = 0.25205
-        self.width = 0.105577
+        self.length = 0.250
+        self.width = 0.100
         self.hight = 0.0
         
         # leg origins (left_f, left_b, right_b, right_f), i.e., the coordinate of j1
@@ -121,7 +121,11 @@ class kinematics():
         
         # modify angles to match robot's configuration (i.e., adding offsets)
         angles = self.angle_corrector(angles=[theta_1, theta_2, theta_3], is_right=is_right)
-        # print(degrees(angles[0]))
+        print(degrees(angles[0]))
+        print(degrees(angles[1]))
+        print(degrees(angles[2]))
+        print(degrees(angles[3]))
+
         return [angles[0], angles[1], angles[2], j1, j2, j3, j4]
     
     
