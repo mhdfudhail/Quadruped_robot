@@ -19,6 +19,14 @@ float toDegree = 57.2958;
 float halfLength = 90; //total 180mm
 float rollRadiuos = 67;
 
+int stepLength=0;
+int stepHeight=0;
+int defualtHeight=0;
+int tempHeight;
+int tempLength;
+bool started=true;
+int smooth;
+
 
 
 void setup()
@@ -27,55 +35,159 @@ void setup()
   myServo.begin();
   myServo.setPWMFreq(SERVO_FREQ);
   delay(10);
+  
   a = 64.0, b = 90.0;
+  stepLength=-40;
+  stepHeight=95;//115
+  defualtHeight=100;//120
+  tempHeight=stepHeight;
+  tempLength=stepLength;
+  smooth=10;
+  started=true;
+  
 }
 
 void loop() {
-//  ik_y(i,107);
-//  ik_x(i,107);
-//  servoPose(i);
-//  ik_roll(-10,107);
-
-for (int i=0; i<20; i+=1){
-  ik_roll(i,100);
-  delay(10);
-}
-for (int i=20; i>0; i-=1){
-  ik_roll(i,100);
-  delay(10);
-}
-for (int i=0; i>-20; i-=1){
-  ik_roll(i,100);
-  delay(10);
-}
-for (int i=-20; i<0; i+=1){
-  ik_roll(i,100);
-  delay(10);
-}
-delay(1000);
+  if (started){
+    servoPose(100);
+    ik_y(0,100);
+    ik_x(0,100);
+    ik_pitch(-3,100);
+    delay(3000);
+    started=false;
+  }
 
 
-for (int i=0; i<20; i+=1){
-  ik_pitch(i,100);
-  delay(10);
+// -----------1-2---------
+for(int i=defualtHeight; i>=stepHeight; i--){
+  tempHeight=tempHeight+1;
+  walkY_leg1_leg4(0, i);
+  walkY_leg2_leg3(tempLength, tempHeight); 
+//  delay(smooth);
 }
-for (int i=20; i>0; i-=1){
-  ik_pitch(i,100);
-  delay(10);
+// -----------2-3---------
+for(int j=0; j>=stepLength; j--){
+  tempLength=tempLength+1;
+  walkY_leg1_leg4(j, stepHeight);
+  walkY_leg2_leg3(tempLength, tempHeight); 
+  delay(smooth);
 }
-for (int i=0; i>-20; i-=1){
-  ik_pitch(i,100);
-  delay(10);
+//ik_pitch(-3,stepHeight);
+// -----------3-4---------
+for(int i=stepHeight; i<=defualtHeight; i++){
+  tempHeight=tempHeight-1;
+  walkY_leg1_leg4(stepLength, i);
+  walkY_leg2_leg3(tempLength, tempHeight); 
+//  delay(smooth);
 }
-for (int i=-20; i<0; i+=1){
-  ik_pitch(i,100);
-  delay(10);
+// -----------4-1---------
+for(int j=stepLength; j<=0; j++){
+  tempLength=tempLength-1;
+  walkY_leg1_leg4(j, defualtHeight);
+  walkY_leg2_leg3(tempLength, tempHeight); 
+  delay(smooth);
 }
-delay(1000);
+
+}
+void walkY_leg1_leg4(float newY, float z){
+    float tempAngleY = atan(newY/z);
+    float zNew = (z/cos(tempAngleY));
+  
+    B = acos((pow(a,2)+pow(zNew,2)-pow(b,2))/(2*a*zNew));
+    C = acos((pow(a,2)+pow(b,2)-pow(zNew,2))/(2*a*b));
+
+    float bDegree = ((B*180)/3.142);
+    float cDegree = ((C*180)/3.142);
+    float tempDegree = (tempAngleY*180)/3.142;
+    theta = 3.142 - (C*2);
+    float thetaDegree = ((theta*180)/3.142);
     
-
+//Right side
+    // Leg:4
+    myServo.writeMicroseconds(3,map((90-(tempDegree)), 0,180,930,2400));
+    myServo.writeMicroseconds(9, map((180-bDegree),0,180,930,2400));
+    myServo.writeMicroseconds(11, map((180-(cDegree-45)),0,180,1150,2750));
+    
+// Left Side
+    // leg:1
+    myServo.writeMicroseconds(0,map((90-(tempDegree)), 0,180,900,2350));
+    myServo.writeMicroseconds(4, map(bDegree,0,180,900,2350));
+    myServo.writeMicroseconds(6, map((cDegree-45),0,180,600,2000));
 
 }
+void walkY_leg2_leg3(float newY, float z){
+    float tempAngleY = atan(newY/z);
+    float zNew = (z/cos(tempAngleY));
+  
+    B = acos((pow(a,2)+pow(zNew,2)-pow(b,2))/(2*a*zNew));
+    C = acos((pow(a,2)+pow(b,2)-pow(zNew,2))/(2*a*b));
+
+    float bDegree = ((B*180)/3.142);
+    float cDegree = ((C*180)/3.142);
+    float tempDegree = (tempAngleY*180)/3.142;
+    theta = 3.142 - (C*2);
+    float thetaDegree = ((theta*180)/3.142);
+
+
+//Right side
+    // Leg:3   
+    myServo.writeMicroseconds(2,map((90-(tempDegree)), 0,180,930,2400));
+    myServo.writeMicroseconds(8, map((180-bDegree),0,180,930,2400));
+    myServo.writeMicroseconds(10, map((180-(cDegree-45)),0,180,1150,2750));
+    
+// Left Side
+    // Leg:2
+    myServo.writeMicroseconds(1,map((90-(tempDegree)), 0,180,900,2350));
+    myServo.writeMicroseconds(5, map(bDegree,0,180,950,2320));
+    myServo.writeMicroseconds(7, map((cDegree-45),0,180,650,2000)); 
+    
+}
+
+void walkX_leg1_leg4(float newX, float z){
+    float tempAngleX = atan(newX/z);
+    float zNew = (z/cos(tempAngleX));
+    B = acos((pow(a,2)+pow(zNew,2)-pow(b,2))/(2*a*zNew));
+    C = acos((pow(a,2)+pow(b,2)-pow(zNew,2))/(2*a*b));
+
+    float bDegree = ((B*180)/3.142);
+    float cDegree = ((C*180)/3.142);
+    float tempDegree = (tempAngleX*180)/3.142;
+    theta = 3.142 - (C*2);
+    float thetaDegree = ((theta*180)/3.142);
+    
+  // Right Side
+    //leg.No:4
+    myServo.writeMicroseconds(9, map((180-(bDegree-tempDegree)),0,180,930,2400));
+    myServo.writeMicroseconds(11, map((180-(cDegree-45)),0,180,1150,2750)); 
+ //  Left Side
+    //leg.No:1
+    myServo.writeMicroseconds(4, map((bDegree-tempDegree),0,180,900,2350));
+    myServo.writeMicroseconds(6, map((cDegree-45),0,180,600,2000));
+    
+}
+void walkX_leg2_leg3(float newX, float z){
+    float tempAngleX = atan(newX/z);
+    float zNew = (z/cos(tempAngleX));
+    B = acos((pow(a,2)+pow(zNew,2)-pow(b,2))/(2*a*zNew));
+    C = acos((pow(a,2)+pow(b,2)-pow(zNew,2))/(2*a*b));
+
+    float bDegree = ((B*180)/3.142);
+    float cDegree = ((C*180)/3.142);
+    float tempDegree = (tempAngleX*180)/3.142;
+    theta = 3.142 - (C*2);
+    float thetaDegree = ((theta*180)/3.142);
+    
+ // Right Side
+    //leg.No:3
+    myServo.writeMicroseconds(8, map((180-(bDegree-tempDegree)),0,180,930,2400));
+    myServo.writeMicroseconds(10, map((180-(cDegree-45)),0,180,1150,2750));
+ // Left Side
+    //leg.No:2
+    myServo.writeMicroseconds(5, map((bDegree-tempDegree),0,180,950,2320)); 
+    myServo.writeMicroseconds(7, map((cDegree-45),0,180,650,2000));
+    
+}
+
 
 
 void servoPose(int c){
@@ -99,7 +211,7 @@ void servoPose(int c){
     myServo.writeMicroseconds(9, map((180-bDegree),0,180,930,2350));
     myServo.writeMicroseconds(11, map((180-(cDegree-45)),0,180,1150,2750));
 //Left Side
-    myServo.writeMicroseconds(5, map(bDegree,0,180,950,2000)); 
+    myServo.writeMicroseconds(5, map(bDegree,0,180,950,2320)); 
     myServo.writeMicroseconds(4, map(bDegree,0,180,900,2350));
     myServo.writeMicroseconds(6, map((cDegree-45),0,180,600,2000));
     myServo.writeMicroseconds(7, map((cDegree-45),0,180,650,2000));
@@ -133,7 +245,7 @@ void ik_x(float newX, float z){
   myServo.writeMicroseconds(11, map((180-(cDegree-45)),0,180,1150,2750));
   
   //Left Side 
-    myServo.writeMicroseconds(5, map((bDegree-tempDegree),0,180,950,2000)); 
+    myServo.writeMicroseconds(5, map((bDegree-tempDegree),0,180,950,2320)); 
     myServo.writeMicroseconds(4, map((bDegree-tempDegree),0,180,900,2350));
     myServo.writeMicroseconds(6, map((cDegree-45),0,180,600,2000));
     myServo.writeMicroseconds(7, map((cDegree-45),0,180,650,2000));
@@ -171,7 +283,7 @@ void ik_y(float newY, float z){
 // Left Side
     myServo.writeMicroseconds(0,map((90-(tempDegree)), 0,180,900,2350));
     myServo.writeMicroseconds(1,map((90-(tempDegree)), 0,180,900,2350));
-    myServo.writeMicroseconds(5, map(bDegree,0,180,950,2000)); 
+    myServo.writeMicroseconds(5, map(bDegree,0,180,950,2320)); 
     myServo.writeMicroseconds(4, map(bDegree,0,180,900,2350));
     myServo.writeMicroseconds(6, map((cDegree-45),0,180,600,2000));
     myServo.writeMicroseconds(7, map((cDegree-45),0,180,650,2000));
@@ -424,3 +536,20 @@ if (angle >= 0){
 
 
 }
+
+
+//  // Right Side
+//    //leg.No:3
+//    myServo.writeMicroseconds(8, map((180-(bDegree-tempDegree)),0,180,930,2400));
+//    myServo.writeMicroseconds(10, map((180-(cDegree-45)),0,180,1150,2750));
+//    //leg.No:4
+//    myServo.writeMicroseconds(9, map((180-(bDegree-tempDegree)),0,180,930,2400));
+//    myServo.writeMicroseconds(11, map((180-(cDegree-45)),0,180,1150,2750));
+//  
+//  //Left Side
+//    //leg.No:2
+//    myServo.writeMicroseconds(5, map((bDegree-tempDegree),0,180,950,2000)); 
+//    myServo.writeMicroseconds(7, map((cDegree-45),0,180,650,2000));
+//    //leg.No:1
+//    myServo.writeMicroseconds(4, map((bDegree-tempDegree),0,180,900,2350));
+//    myServo.writeMicroseconds(6, map((cDegree-45),0,180,600,2000));
